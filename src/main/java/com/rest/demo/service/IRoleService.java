@@ -6,6 +6,6 @@ import com.rest.demo.model.Role;
 
 public interface IRoleService extends ICrudService<Role, Long> {
 	
-	public List<Role> obtenerRolesxUsuario(Long id);
+	public List<Role> obtenerRolesxUsuario(String username);
 
 }

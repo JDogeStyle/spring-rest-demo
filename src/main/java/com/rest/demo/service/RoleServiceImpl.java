@@ -51,8 +51,8 @@ public class RoleServiceImpl implements IRoleService {
 
 	@Transactional(readOnly=true)
 	@Override
-	public List<Role> obtenerRolesxUsuario(Long id) {
-		return repository.findRoleByUserID(id);
+	public List<Role> obtenerRolesxUsuario(String username) {
+		return repository.findRoleByUsername(username);
 	}
 
 }

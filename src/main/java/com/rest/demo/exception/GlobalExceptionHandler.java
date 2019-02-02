@@ -12,6 +12,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -130,19 +132,33 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         final ResponseError responseError = new ResponseError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), error);
         return new ResponseEntity<Object>(responseError, new HttpHeaders(), responseError.getStatus());
     }
-    
-    @ExceptionHandler({ Exception.class })
-    public ResponseEntity<Object> handleAll(final Exception ex, final WebRequest request) {
-        final ResponseError responseError = new ResponseError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getLocalizedMessage(), "error occurred");
-        return new ResponseEntity<Object>(responseError, new HttpHeaders(), responseError.getStatus());
-    }
 
-	@ExceptionHandler(ResourceNotFoundException.class)
+	@ExceptionHandler({ ResourceNotFoundException.class })
 	public ResponseEntity<Object> handleResourceNotFoundException(final ResourceNotFoundException ex, final HttpServletRequest request){
 		final String resource = request.getMethod() + ":" + request.getRequestURI();
 		final String error = "The resource " + resource + " does not exist. Please try with other parameter.";
 		final ResponseError responseError = new ResponseError(HttpStatus.NOT_FOUND, ex.getLocalizedMessage(), error);
 		return new ResponseEntity<Object>(responseError, new HttpHeaders(), responseError.getStatus());
-	}
+    }
+    
+    @ExceptionHandler({ AccessDeniedException.class })
+    public ResponseEntity<Object> handleAccessDeniedException(final AccessDeniedException ex, final HttpServletRequest request) {
+        final String error = "Requested access to the resource is denied. Please try with other user account.";
+        final ResponseError responseError = new ResponseError(HttpStatus.FORBIDDEN, ex.getLocalizedMessage(), error);
+        return new ResponseEntity<Object>(responseError, new HttpHeaders(), responseError.getStatus());
+    }
+
+    @ExceptionHandler({ AuthenticationException.class })
+    public ResponseEntity<Object> handleAuthenticationException(final AuthenticationException ex, final HttpServletRequest request) {
+        final String error = "The resource owner could not be authenticated due to missing or invalid credentials.";
+        final ResponseError responseError = new ResponseError(HttpStatus.UNAUTHORIZED, ex.getLocalizedMessage(), error);
+        return new ResponseEntity<Object>(responseError, new HttpHeaders(), responseError.getStatus());
+    }
+
+    @ExceptionHandler({ Exception.class })
+    public ResponseEntity<Object> handleAll(final Exception ex, final WebRequest request) {
+        final ResponseError responseError = new ResponseError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getLocalizedMessage(), "error occurred");
+        return new ResponseEntity<Object>(responseError, new HttpHeaders(), responseError.getStatus());
+    }
 	
 }

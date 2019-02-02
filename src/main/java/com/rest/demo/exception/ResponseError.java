@@ -8,7 +8,9 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class ResponseError implements Serializable { 
 	private static final long serialVersionUID = 1L;
 	private HttpStatus status;

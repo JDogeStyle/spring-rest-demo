@@ -4,6 +4,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,12 +29,12 @@ public class LoginController {
 		this.passwordEncoder = passwordEncoder;
 		this.inMemoryUserDetailsManager = inMemoryUserDetailsManager;
 	}
-
+	
 	@PostMapping(path = "/signin", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public boolean signin(@RequestBody @Valid Login login) {
+	public ResponseEntity<?> signin(@RequestBody @Valid Login login) {
 		return usuarioService.buscarxUsername(login.getUsername())
-			.map(u -> passwordEncoder.matches(login.getPassword(), u.getPassword()))
-			.orElse(inMemoryUserDetailsManager.userExists(login.getUsername()));
+			.map(u -> ResponseEntity.ok(passwordEncoder.matches(login.getPassword(), u.getPassword())))
+			.orElse(ResponseEntity.ok(inMemoryUserDetailsManager.userExists(login.getUsername())));
 	}
 	
 }

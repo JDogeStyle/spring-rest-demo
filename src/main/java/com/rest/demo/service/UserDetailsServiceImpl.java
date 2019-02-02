@@ -27,20 +27,23 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		return usuarioService.buscarxUsername(username)
-			.map(user -> {
-				List<GrantedAuthority> authorities = roleService.obtenerRolesxUsuario(user.getIdusuario())
-				.stream().map(r -> new SimpleGrantedAuthority("ROLE_" + r.getDescripcion())).collect(Collectors.toList());
-				
-				return User.withUsername(user.getUsername())
+			.map(user -> 
+				User.withUsername(user.getUsername())
 				.password(user.getPassword())
-				.authorities(authorities)
+				.authorities(authorities(username))
 				.disabled(!user.isEstado())
 				.accountExpired(false)
 				.accountLocked(false)
 				.credentialsExpired(false)
-				.build();
-			})
+				.build()
+			)
 			.orElseThrow(() -> new UsernameNotFoundException(username + " was not found"));
+	}
+
+	private List<GrantedAuthority> authorities(String username) {
+		return roleService.obtenerRolesxUsuario(username).stream()
+			.map(r -> new SimpleGrantedAuthority("ROLE_" + r.getDescripcion()))
+			.collect(Collectors.toList());
 	}
 
 }

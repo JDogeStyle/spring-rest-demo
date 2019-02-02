@@ -11,9 +11,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.rest.demo.model.Producto;
 
+@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
 @RepositoryRestResource(path = "producto", itemResourceRel = "producto", collectionResourceRel = "productos")
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
 	@Query("SELECT p FROM Producto p JOIN FETCH p.categoria")
@@ -46,5 +48,9 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
 	@Modifying
 	@Query("UPDATE Producto p SET p.descripcion = :desc WHERE p.codpro = :id")
 	public int updateByDescripcion(@Param("desc") String desc, @Param("id") Long id);
-	
+
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	void deleteById(Long id);
+
 }

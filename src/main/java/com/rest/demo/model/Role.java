@@ -11,9 +11,15 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name="roles")
+@JsonIgnoreProperties(ignoreUnknown=true)
 @NamedQuery(name="Role.findAll", query="SELECT r FROM Role r")
 public class Role implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -23,10 +29,13 @@ public class Role implements Serializable {
 	@Column(unique=true, nullable=false)
 	private Long idrol;
 	
+	@NotNull
+	@Size(min=3, max=45)
 	@Column(nullable=false, length=45, unique=true)
 	private String descripcion;
 
 	//bi-directional many-to-many association to Usuario
+	@JsonIgnore
 	@ManyToMany(mappedBy="roles")
 	private List<Usuario> usuarios;
 
